@@ -97,15 +97,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $filterDate = cleanInput($_GET['filter_tanggal'] ?? '');
 $filterClass = cleanInput($_GET['filter_kelas'] ?? '');
-$totalsQuery = 'SELECT kategori, SUM(berat) AS total FROM laporan WHERE 1 = 0';
+$totalsQuery = 'SELECT kategori, SUM(berat) AS total FROM laporan WHERE 1 = 1';
 $totalsParameters = [];
 if ($filterClass !== '') {
-  $totalsQuery = 'SELECT kategori, SUM(berat) AS total FROM laporan WHERE kelas = :kelas';
+  $totalsQuery .= ' AND kelas = :kelas';
   $totalsParameters[':kelas'] = $filterClass;
-  if ($filterDate !== '') {
-    $totalsQuery .= ' AND tanggal = :tanggal';
-    $totalsParameters[':tanggal'] = $filterDate;
-  }
+}
+if ($filterDate !== '') {
+  $totalsQuery .= ' AND tanggal = :tanggal';
+  $totalsParameters[':tanggal'] = $filterDate;
 }
 $totalsQuery .= ' GROUP BY kategori';
 $totalsStatement = $database->prepare($totalsQuery);
