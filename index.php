@@ -50,89 +50,10 @@ function normalizeCategory(string $value, array $kategoriLabels): ?string
   return null;
 }
 
-function normalizeDateValue(string $value): ?string
-{
-  $value = trim($value);
-  if ($value === '') {
-    return null;
-  }
-  if (is_numeric($value) && (float) $value > 20000) {
-    $date = new DateTime('1899-12-30');
-    $date->modify('+' . (int) $value . ' days');
-    return $date->format('Y-m-d');
-  }
-  foreach (['d/m/Y', 'd-m-Y', 'Y-m-d', 'm/d/Y'] as $format) {
-    $date = DateTime::createFromFormat($format, $value);
-    if ($date !== false && $date->format($format) === $value) {
-      return $date->format('Y-m-d');
-    }
-  }
-  return null;
-}
-
 function saveReport(PDO $database, array $report): void
 {
   $statement = $database->prepare('INSERT INTO laporan (nama, tanggal, kelas, kategori, berat, gambar) VALUES (?, ?, ?, ?, ?, ?)');
   $statement->execute([$report['nama'], $report['tanggal'], $report['kelas'], $report['kategori'], $report['berat'], $report['gambar']]);
-}
-
-function parseSpreadsheet(string $filePath, string $extension): array
-{
-  if ($extension === 'csv') {
-    $handle = fopen($filePath, 'r');
-    if ($handle === false) {
-      throw new RuntimeException('File CSV tidak dapat dibaca.');
-    }
-    $rows = [];
-    while (($row = fgetcsv($handle)) !== false) {
-      $rows[] = $row;
-    }
-    fclose($handle);
-    return $rows;
-  }
-
-  if (!class_exists('ZipArchive')) {
-    throw new RuntimeException('Ekstensi PHP ZipArchive diperlukan untuk membaca XLSX.');
-  }
-  $zip = new ZipArchive();
-  if ($zip->open($filePath) !== true) {
-    throw new RuntimeException('File XLSX tidak dapat dibaca.');
-  }
-  $sharedStrings = [];
-  $sharedXml = $zip->getFromName('xl/sharedStrings.xml');
-  if ($sharedXml !== false) {
-    $sharedDocument = simplexml_load_string($sharedXml);
-    foreach ($sharedDocument->si as $item) {
-      $sharedStrings[] = (string) ($item->t ?? implode('', array_map('strval', $item->r->t ?? [])));
-    }
-  }
-  $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
-  $zip->close();
-  if ($sheetXml === false) {
-    throw new RuntimeException('Sheet pertama XLSX tidak ditemukan.');
-  }
-  $sheet = simplexml_load_string($sheetXml);
-  $rows = [];
-  foreach ($sheet->sheetData->row as $xmlRow) {
-    $row = [];
-    foreach ($xmlRow->c as $cell) {
-      $reference = (string) $cell['r'];
-      preg_match('/([A-Z]+)/', $reference, $match);
-      $column = 0;
-      foreach (str_split($match[1] ?? 'A') as $letter) {
-        $column = ($column * 26) + ord($letter) - 64;
-      }
-      $value = (string) ($cell->v ?? '');
-      if ((string) $cell['t'] === 's') {
-        $value = $sharedStrings[(int) $value] ?? '';
-      }
-      $row[$column - 1] = $value;
-    }
-    ksort($row);
-    $lastColumn = empty($row) ? -1 : max(array_keys($row));
-    $rows[] = array_map(static fn($column) => $row[$column] ?? '', range(0, $lastColumn));
-  }
-  return $rows;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -165,99 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $message = 'Laporan berhasil disimpan ke database.';
     }
 
-    if (($_POST['action'] ?? '') === 'import_sheet') {
-      if (empty($_FILES['spreadsheet']['name']) || $_FILES['spreadsheet']['error'] !== UPLOAD_ERR_OK) {
-        throw new RuntimeException('Pilih file CSV atau XLSX terlebih dahulu.');
-      }
-      $extension = strtolower(pathinfo($_FILES['spreadsheet']['name'], PATHINFO_EXTENSION));
-      if (!in_array($extension, ['csv', 'xlsx'], true)) {
-        throw new RuntimeException('File import harus berformat CSV atau XLSX.');
-      }
-      $rows = parseSpreadsheet($_FILES['spreadsheet']['tmp_name'], $extension);
-      if (count($rows) < 2) {
-        throw new RuntimeException('File import tidak memiliki data.');
-      }
-      $headerRowIndex = null;
-      $wideCategoryColumns = [];
-      $dateColumn = null;
-      foreach ($rows as $rowIndex => $candidateRow) {
-        foreach ($candidateRow as $columnIndex => $header) {
-          $normalizedHeader = strtolower(trim((string) $header));
-          if ($normalizedHeader === 'tanggal') {
-            $dateColumn = $columnIndex;
-          }
-          if (normalizeCategory($normalizedHeader, $kategoriLabels) !== null) {
-            $wideCategoryColumns[$columnIndex] = normalizeCategory($normalizedHeader, $kategoriLabels);
-          }
-        }
-        if ($dateColumn !== null && count($wideCategoryColumns) > 0) {
-          $headerRowIndex = $rowIndex;
-          break;
-        }
-      }
-      $isWideFormat = $headerRowIndex !== null;
-      if ($isWideFormat) {
-        $classColumn = max(0, $dateColumn - 1);
-        $database->beginTransaction();
-        $imported = 0;
-        $currentClass = '';
-        foreach (array_slice($rows, $headerRowIndex + 1) as $row) {
-          $classValue = cleanInput((string) ($row[$classColumn] ?? ''));
-          if ($classValue !== '') {
-            $currentClass = $classValue;
-          }
-          $date = normalizeDateValue((string) ($row[$dateColumn] ?? ''));
-          if ($currentClass === '' || $date === null) {
-            continue;
-          }
-          foreach ($wideCategoryColumns as $columnIndex => $category) {
-            $weight = filter_var(str_replace(',', '.', (string) ($row[$columnIndex] ?? '')), FILTER_VALIDATE_FLOAT);
-            if ($weight === false || $weight <= 0) {
-              continue;
-            }
-            saveReport($database, [
-              'nama' => 'Import Excel',
-              'tanggal' => $date,
-              'kelas' => $currentClass,
-              'kategori' => $category,
-              'berat' => $weight,
-              'gambar' => null
-            ]);
-            $imported++;
-          }
-        }
-        $database->commit();
-        $message = $imported . ' data kategori berhasil diimport dari format Excel.';
-      } else {
-      $headers = array_map(static fn($header) => strtolower(trim((string) $header)), $rows[0]);
-      $requiredHeaders = ['nama', 'tanggal', 'kelas', 'kategori', 'berat'];
-      if (array_diff($requiredHeaders, $headers)) {
-        throw new RuntimeException('Header wajib: nama, tanggal, kelas, kategori, berat.');
-      }
-      $headerIndex = array_flip($headers);
-      $database->beginTransaction();
-      $imported = 0;
-      foreach (array_slice($rows, 1) as $row) {
-        $category = normalizeCategory((string) ($row[$headerIndex['kategori']] ?? ''), $kategoriLabels);
-        $weight = filter_var(str_replace(',', '.', (string) ($row[$headerIndex['berat']] ?? '')), FILTER_VALIDATE_FLOAT);
-        $report = [
-          'nama' => cleanInput((string) ($row[$headerIndex['nama']] ?? '')),
-          'tanggal' => cleanInput((string) ($row[$headerIndex['tanggal']] ?? '')),
-          'kelas' => cleanInput((string) ($row[$headerIndex['kelas']] ?? '')),
-          'kategori' => $category,
-          'berat' => $weight,
-          'gambar' => null
-        ];
-        if ($report['nama'] === '' || $report['tanggal'] === '' || $report['kelas'] === '' || $category === null || $weight === false || $weight <= 0) {
-          continue;
-        }
-        saveReport($database, $report);
-        $imported++;
-      }
-      $database->commit();
-      $message = $imported . ' baris berhasil diimport.';
-      }
-    }
   } catch (Throwable $error) {
     if ($database->inTransaction()) {
       $database->rollBack();
@@ -269,15 +97,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $filterDate = cleanInput($_GET['filter_tanggal'] ?? '');
 $filterClass = cleanInput($_GET['filter_kelas'] ?? '');
-$totalsQuery = 'SELECT kategori, SUM(berat) AS total FROM laporan WHERE 1 = 1';
+$totalsQuery = 'SELECT kategori, SUM(berat) AS total FROM laporan WHERE 1 = 0';
 $totalsParameters = [];
-if ($filterDate !== '') {
-  $totalsQuery .= ' AND tanggal = :tanggal';
-  $totalsParameters[':tanggal'] = $filterDate;
-}
 if ($filterClass !== '') {
-  $totalsQuery .= ' AND kelas = :kelas';
+  $totalsQuery = 'SELECT kategori, SUM(berat) AS total FROM laporan WHERE kelas = :kelas';
   $totalsParameters[':kelas'] = $filterClass;
+  if ($filterDate !== '') {
+    $totalsQuery .= ' AND tanggal = :tanggal';
+    $totalsParameters[':tanggal'] = $filterDate;
+  }
 }
 $totalsQuery .= ' GROUP BY kategori';
 $totalsStatement = $database->prepare($totalsQuery);
@@ -383,14 +211,6 @@ Setiap langkah kecil kalian hari ini dapat membawa dampak besar bagi kebersihan 
             <?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?>
           </div>
         <?php endif; ?>
-        <div class="data-tools">
-          <form class="import-form" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="action" value="import_sheet">
-            <input type="file" name="spreadsheet" accept=".csv,.xlsx" required>
-            <button type="submit" class="btn-import"><i class="fa-solid fa-file-import"></i> Import CSV/XLSX</button>
-          </form>
-          
-        </div>
         <div class="form-grid">
           <div class="form-group">
             <label for="filter-tanggal"><i class="fa-solid fa-calendar-day"></i> Tanggal:</label>

@@ -219,10 +219,6 @@ body { background-color: var(--text-main); }
 .chart-section { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; }
 .chart-card { background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); opacity: 0.9; border: 1px solid var(--glass-border); border-radius: 24px; padding: 36px; width: 100%; max-width: 1200px; box-shadow: 0 24px 50px var(--shadow-color); display: flex; flex-direction: column; gap: 16px; }
 .chart-container { position: relative; height: 280px; width: 100%; }
-.data-tools { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.import-form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.import-form input[type="file"] { max-width: 250px; }
-.btn-import { background: var(--text-main); color: var(--glass-bg); border: 0; border-radius: 10px; padding: 11px 16px; font-weight: 700; cursor: pointer; }
 .status-message { padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; background: rgba(16, 185, 129, 0.14); color: #047857; }
 .status-message.error { background: rgba(239, 68, 68, 0.14); color: #b91c1c; }
 .tabel-container { width: 100%; height: fit-content; border-collapse: collapse; font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-radius: 8px; }
