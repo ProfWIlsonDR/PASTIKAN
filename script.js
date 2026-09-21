@@ -145,13 +145,22 @@ filterClassInput.value = filterClassInput.dataset.selected || '';
 
     input.disabled = true;
     try {
-      const response = await fetch(`${window.location.pathname}?${query.toString()}`, {
+      const endpoint = new URL('index.php', document.baseURI);
+      endpoint.search = query.toString();
+      const response = await fetch(endpoint.href, {
+        cache: 'no-store',
         headers: { Accept: 'application/json' }
       });
       if (!response.ok) {
-        throw new Error('Gagal mengambil data grafik.');
+        throw new Error(`Gagal mengambil data grafik (${response.status}) dari ${endpoint.href}`);
       }
-      const result = await response.json();
+      const responseText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        throw new Error(`Server tidak mengembalikan JSON dari ${endpoint.href}: ${responseText.slice(0, 120)}`);
+      }
       const totals = result.totals;
       barChartKategori.data.datasets[0].data = totals;
       barChartKategori.update();
@@ -162,7 +171,7 @@ filterClassInput.value = filterClassInput.dataset.selected || '';
       visibleQuery.delete('ajax');
       window.history.replaceState({}, '', `${window.location.pathname}${visibleQuery.toString() ? `?${visibleQuery}` : ''}`);
     } catch (error) {
-      console.error(error);
+      console.error('Filter grafik gagal:', error);
     } finally {
       input.disabled = false;
     }
