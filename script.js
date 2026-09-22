@@ -95,7 +95,7 @@ const barChartKategori = new Chart(chartCanvas.getContext('2d'), {
         padding: 12,
         cornerRadius: 8,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return ` Total: ${context.parsed.y} kg`;
           }
         }

@@ -153,9 +153,11 @@ if (($_GET['ajax'] ?? '') === 'chart') {
       <ul class="nav-menu">
         <li class="active" id="nav-beranda"><a onclick="scrollToTop()"><i class="fa-solid fa-house"></i> Beranda</a></li>
         <li id="nav-grafik"><a href="#grafik"><i class="fa-solid fa-chart-column"></i> Grafik</a></li>
-        <li id="nav-lapor"><a href="#input-laporan"><i class="fa-solid fa-pen-to-square"></i>Laporan</a></li>
-        <li id="nav-dokum"><a href="#dokumentasi"><i class="fa-solid fa-camera"></i>Dokumentasi</a></li>
-        <li id="nav-mitra"><a href="#mitra"><i class="fa-solid fa-handshake"></i>Mitra</a></li>
+        <li id="nav-lapor"><a href="#input-laporan"><i class="fa-solid fa-pen-to-square"></i> Laporan</a></li>
+        <li id="nav-dokum"><a href="#dokumentasi"><i class="fa-solid fa-camera"></i> Dokumentasi</a></li>
+        <li id="nav-mitra"><a href="#mitra"><i class="fa-solid fa-handshake"></i> Mitra</a></li>
+        <li id="nav-faq"><a href="#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
+        <li id="nav-kontak"><a href="#kontak"><i class="fa-solid fa-address-book"></i> Kontak</a></li>
       </ul>
 
       <div class="nav-actions">
@@ -442,25 +444,143 @@ Setiap langkah kecil kalian hari ini dapat membawa dampak besar bagi kebersihan 
       </div>
     </section>
 
-  </div>
+    <script src="script.js"></script>
 
-  <div class="notification-overlay" id="notifOverlay">
-    <div class="notification-box">
-      <div class="icon-badge">
-        <i class="fa-solid fa-check"></i>
+    <div class="notification-overlay" id="notifOverlay">
+      <div class="notification-box">
+        <div class="icon-badge">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div class="notification-title">Laporan Berhasil Disimpan!</div>
+        <p class="notification-sub">
+          Terima kasih! Data sampah dan foto bukti Anda telah terverifikasi dan tercatat pada database Bank Sampah BEO SMKN 65 Jakarta.
+        </p>
+        <button class="btn-close-notif" onclick="closeNotification()">
+          Selesai & Lanjutkan
+        </button>
       </div>
-      <div class="notification-title">Laporan Berhasil Disimpan!</div>
-      <p class="notification-sub">
-        Terima kasih! Data sampah dan foto bukti Anda telah terverifikasi dan tercatat pada database Bank Sampah BEO SMKN 65 Jakarta.
+    </div>
+
+<section class="faq-section" id="faq">
+  <div class="faq-card">
+    <div class="faq-header">
+      <h2>
+        <i class="fa-solid fa-circle-question"></i> Pertanyaan Sering Diajukan (FAQ)
+      </h2>
+      <p>Informasi seputar sistem pengelolaan sampah PASTIKAN SMKN 65 Jakarta & Bank Sampah BEO</p>
+    </div>
+
+    <div class="faq-container">
+      <details class="faq-item">
+        <summary>
+          <span><i class="fa-solid fa-leaf"></i> Apa itu sistem PASTIKAN SPANCA?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </summary>
+        <p>
+          PASTIKAN (Pengelolaan Aktif Sampah Terintegrasi SPANCA) adalah platform digital SMKN 65 Jakarta yang memfasilitasi pencatatan, pemilahan, dan rekapitulasi data pengumpulan sampah harian peserta didik secara real-time.
+        </p>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span><i class="fa-solid fa-trash-can"></i> Apa saja kategori sampah yang dapat disetorkan?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </summary>
+        <p>
+          Sampah dibagi menjadi 4 kategori utama: <b>Organik</b> (sisa makanan/daun), <b>Anorganik</b> (plastik, kertas, kaleng), <b>Residu</b> (tisu kotor/styrofoam), dan <b>B3</b> (baterai/lampu bekas).
+        </p>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span><i class="fa-solid fa-handshake"></i> Dimana lokasi penyetoran sampah Mitra Bank Sampah BEO?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </summary>
+        <p>
+          Penyetoran dan penimbangan dapat dilakukan di lokasi mitra Bank Sampah BEO, Jl. Cipinang Besar Selatan RT 005 RW 10, Kel. Cipinang Besar Selatan, Jakarta Timur, atau melalui titik kumpul Adiwiyata SMKN 65 Jakarta.
+        </p>
+      </details>
+
+      <details class="faq-item">
+        <summary>
+          <span><i class="fa-solid fa-paper-plane"></i> Bagaimana cara mengisi formulir laporan sampah?</span>
+          <i class="fa-solid fa-chevron-down faq-icon"></i>
+        </summary>
+        <p>
+          Pilih menu <a href="#input-laporan">Laporan</a>, isi Nama, Tanggal, Kelas, Kategori Sampah, Berat (kg), serta unggah foto bukti saat membuang sampah pada tempatnya, lalu klik "Kirim Laporan Sampah".
+        </p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer" id="kontak">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">
+        <img src="Logo 65.png" alt="Logo SMKN 65 Jakarta" class="footer-logo" onerror="this.style.display='none'">
+        <div>
+          <h3>SMKN 65 JAKARTA</h3>
+          <p class="brand-tag">PASTIKAN SPANCA</p>
+        </div>
+      </div>
+      <p class="footer-desc">
+        Pengelolaan Aktif Sampah Terintegrasi SPANCA x Bank Sampah BEO. Bersama mewujudkan lingkungan sekolah yang bersih, hijau, dan bebas sampah.
       </p>
-      <button class="btn-close-notif" onclick="closeNotification()">
-        Selesai & Lanjutkan
-      </button>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Navigasi</h4>
+      <ul class="footer-links">
+        <li><a href="#beranda"><i class="fa-solid fa-chevron-right"></i> Beranda</a></li>
+        <li><a href="#grafik"><i class="fa-solid fa-chevron-right"></i> Grafik Rekapitulasi</a></li>
+        <li><a href="#input-laporan"><i class="fa-solid fa-chevron-right"></i> Form Laporan</a></li>
+        <li><a href="#dokumentasi"><i class="fa-solid fa-chevron-right"></i> Galeri Kegiatan</a></li>
+        <li><a href="#mitra"><i class="fa-solid fa-chevron-right"></i> Mitra Kerjasama</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Kontak & Alamat</h4>
+      <ul class="footer-contact">
+        <li>
+          <i class="fa-solid fa-location-dot"></i>
+          <span><b>SMKN 65 Jakarta:</b> Jl. Declate No.1, RT.2/RW.3, Cipinang Besar Selatan, Jatinegara, Jakarta Timur.</span>
+        </li>
+        <li>
+          <i class="fa-solid fa-recycle"></i>
+          <span><b>Bank Sampah BEO:</b> Jl. Cipinang Besar Selatan RT 005 RW 10, Cipinang Besar Selatan, Jakarta Timur.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-title">Sosial Media</h4>
+      <p class="social-text">Ikuti aktivitas dan pembaruan seputar Adiwiyata SPANCA:</p>
+
+      <div class="social-links">
+        <a href="https://instagram.com/smkn65jkt" target="_blank" rel="noopener noreferrer" class="social-btn instagram" title="Instagram @smkn65jkt">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.youtube.com/@smkn65jakarta" target="_blank" rel="noopener noreferrer" class="social-btn youtube" title="YouTube SMKN 65 Jakarta">
+          <i class="fa-brands fa-youtube"></i>
+        </a>
+        <a href="#input-laporan" class="social-btn submit-report" title="Kirim Laporan Sampah">
+          <i class="fa-solid fa-paper-plane"></i>
+        </a>
+      </div>
+
+      <div class="operational-box">
+        <p class="op-title"><i class="fa-solid fa-clock"></i> Jam Operasional Setor:</p>
+        <p class="op-time">Senin - Jumat: 07.00 - 15.00 WIB</p>
+      </div>
     </div>
   </div>
 
-
-  <script src="script.js"></script>
-
+  <div class="footer-bottom">
+    <p>&copy; 2026 <b>SMKN 65 Jakarta</b> x <b>Bank Sampah BEO</b>. All rights reserved.</p>
+  </div>
+</footer>
+</div>
 </body>
 </html>
