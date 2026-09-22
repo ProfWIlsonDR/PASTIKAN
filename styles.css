@@ -1047,6 +1047,10 @@ body {
   background: #ff0000;
 }
 
+.social-btn.tiktok:hover {
+  background: #dc2626;
+}
+
 .social-btn.submit-report:hover {
   background: var(--primary);
 }

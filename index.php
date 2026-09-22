@@ -556,14 +556,17 @@ Setiap langkah kecil kalian hari ini dapat membawa dampak besar bagi kebersihan 
 
     <div class="footer-col">
       <h4 class="footer-title">Sosial Media</h4>
-      <p class="social-text">Ikuti aktivitas dan pembaruan seputar Adiwiyata SPANCA:</p>
+      <p class="social-text">Ikuti aktivitas dan pembaruan seputar SMKN 65 SPANCA:</p>
 
       <div class="social-links">
-        <a href="https://instagram.com/smkn65jkt" target="_blank" rel="noopener noreferrer" class="social-btn instagram" title="Instagram @smkn65jkt">
+        <a href="https://www.instagram.com/smkn65jakarta.official/" target="_blank" rel="noopener noreferrer" class="social-btn instagram" title="Instagram @smkn65jkt">
           <i class="fa-brands fa-instagram"></i>
         </a>
-        <a href="https://www.youtube.com/@smkn65jakarta" target="_blank" rel="noopener noreferrer" class="social-btn youtube" title="YouTube SMKN 65 Jakarta">
+        <a href="https://www.youtube.com/@smknegeri65jakarta82" target="_blank" rel="noopener noreferrer" class="social-btn youtube" title="YouTube SMKN 65 Jakarta">
           <i class="fa-brands fa-youtube"></i>
+        </a>
+        <a href="https://www.tiktok.com/@username_tiktok" target="_blank" rel="noopener noreferrer" class="social-btn tiktok" title="TikTok SMKN 65 Jakarta">
+          <i class="fa-brands fa-tiktok"></i>
         </a>
         <a href="#input-laporan" class="social-btn submit-report" title="Kirim Laporan Sampah">
           <i class="fa-solid fa-paper-plane"></i>
@@ -578,7 +581,7 @@ Setiap langkah kecil kalian hari ini dapat membawa dampak besar bagi kebersihan 
   </div>
 
   <div class="footer-bottom">
-    <p>&copy; 2026 <b>SMKN 65 Jakarta</b> x <b>Bank Sampah BEO</b>. All rights reserved.</p>
+    <p>&copy; 2026-2027 <b>SMKN 65 Jakarta</b> x <b>Bank Sampah BEO</b>. All rights reserved.</p>
   </div>
 </footer>
 </div>
